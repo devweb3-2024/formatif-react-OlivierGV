@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Snackbar, Alert } from '@mui/material';
+import { Container, Snackbar, Alert, Button } from '@mui/material';
 import GrilleMot from './grillemots';
-import { obtenirMotAleatoire, listeMots } from '../utils/mots';
+import { obtenirMotAleatoire, trouverMot } from '../utils/mots';
 import Clavier from './clavier';
 
 const Jeu: React.FC = () => {
+  const [afficherCouleur, setAfficherCouleur] = useState<boolean>(false);
   const [motCible, setMotCible] = useState<string>('');
   const [essais, setEssais] = useState<string[]>([]);
   const [essaiCourant, setEssaiCourant] = useState<string>('');
@@ -24,6 +25,18 @@ const Jeu: React.FC = () => {
     }
   }, [essais]);
 
+  /**
+   * OGV : Fonction pour reset le jeu
+   */
+  const resetPartie = () => {
+    setMotCible(obtenirMotAleatoire());
+    setEssaiCourant('');
+    setEssais([]);
+    setMessage(null);
+    setFinPartie(false);
+    setAfficherCouleur(false);
+  }
+
   const verifierDernierEssai = () => {
     const dernierEssai = essais[essais.length - 1];
     if (dernierEssai === motCible) {
@@ -39,6 +52,10 @@ const Jeu: React.FC = () => {
         severity: 'error',
       });
     }
+    /**
+     * Afficher les couleurs
+     */
+    setAfficherCouleur(true);
   };
 
   const handleSoumettreEssai = () => {
@@ -50,10 +67,10 @@ const Jeu: React.FC = () => {
       return;
     }
     if (
-      !listeMots.includes(
-        essaiCourant.charAt(0).toUpperCase() +
-          essaiCourant.slice(1).toLowerCase()
-      )
+      /**
+       * OGV : Trouver le mot dans le tableau
+       */
+      !trouverMot(essaiCourant.toLowerCase())
     ) {
       setMessage({
         text: "Ce mot n'est pas dans la liste.",
@@ -65,12 +82,16 @@ const Jeu: React.FC = () => {
     setEssaiCourant('');
   };
 
+  /**
+   * OGV : Ajout d'un bouton pour reset la partie
+   */
   return (
     <Container maxWidth="sm">
       <GrilleMot
         essais={essais}
         motCible={motCible}
         essaiCourant={essaiCourant}
+        afficherCouleur={afficherCouleur}
       />
       <Clavier
         essaiCourant={essaiCourant}
@@ -78,6 +99,9 @@ const Jeu: React.FC = () => {
         onEnter={handleSoumettreEssai}
         inactif={finPartie}
       />
+      <Button variant="contained" onClick={resetPartie} disabled={finPartie ? false : true}>
+        Redémarrer
+      </Button>
       {message && (
         <Snackbar open autoHideDuration={6000} onClose={() => setMessage(null)}>
           <Alert

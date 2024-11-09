@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, Paper } from '@mui/material';
 
 interface GrilleMotsProps {
   essais: string[];
   essaiCourant: string;
   motCible: string;
+  afficherCouleur: boolean,
 }
 
 const GrilleMot: React.FC<GrilleMotsProps> = ({
   essais,
   essaiCourant,
   motCible,
+  afficherCouleur,
 }) => {
   const rows = Array.from({ length: 5 }, (_, i) => {
     const guess =
@@ -19,9 +21,12 @@ const GrilleMot: React.FC<GrilleMotsProps> = ({
   });
 
   const obtenirCouleurLettre = (letter: string, index: number) => {
-    if (!motCible) return 'default';
-    if (motCible[index] === letter) return 'success.main';
-    if (motCible.includes(letter)) return 'warning.main';
+    /** OGV : Afficher les couleurs si on a appuyé sur le bouton */
+    if(afficherCouleur){
+      if (!motCible) return 'default';
+      if (motCible[index] === letter) return 'success.main';
+      if (motCible.includes(letter)) return 'warning.main';
+    }
     return 'grey.500';
   };
 

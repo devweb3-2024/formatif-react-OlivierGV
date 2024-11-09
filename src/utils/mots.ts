@@ -2042,7 +2042,37 @@ export const listeMots = [
   'zones',
 ];
 
+/**
+ * OGV : Je retourne le mot sans accent à la place. ------------------------------------------------
+ */
+
+/**
+ * Code emprunté : https://www.equinode.com/fonctions-javascript/retirer-les-accents-avec-javascript
+ * @param mot 
+ * @returns 
+ */
+function strNoAccent(mot : string) {
+  return mot.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+}
+
 export const obtenirMotAleatoire = () => {
-  const indexAleatoire = Math.floor(Math.random() + listeMots.length);
-  return listeMots[indexAleatoire].toUpperCase();
+  /** OGV : Correction de Math.Random */
+  const indexAleatoire = Math.floor(Math.random() * listeMots.length);
+  const mot = listeMots[indexAleatoire].toUpperCase();
+  return strNoAccent(mot);
 };
+
+/**
+ * Fonction pour normaliser un mot et normaliser une valeur du tableau et les comparer
+ * @param mot 
+ * @returns 
+ */
+export function trouverMot(mot : string){
+  for(let i = 0; i < listeMots.length; i++){
+    if(listeMots[i].normalize == mot.normalize){
+      return true;
+      break;
+    }
+  }
+  return false;
+}
